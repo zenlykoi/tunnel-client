@@ -1,24 +1,18 @@
 {
-  "name": "localtunnel",
+  "name": "tunnel-client",
   "description": "Expose localhost to the world",
-  "version": "2.0.2",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/localtunnel/localtunnel.git"
+    "url": "git://github.com/zenlykoi/tunnel-client"
   },
-  "author": "Roman Shtylman <shtylman@gmail.com>",
-  "contributors": [
-    "Roman Shtylman <shtylman@gmail.com>",
-    "Gert Hengeveld <gert@hichroma.com>",
-    "Tom Coleman <tom@hichroma.com>"
-  ],
-  "main": "./localtunnel.js",
+  "author": "Do Nguyen Phuong <nguyenphuong.2661999@gmail.com>",
   "bin": {
-    "lt": "bin/lt.js"
+    "tc": "src/index.js"
   },
   "scripts": {
-    "test": "mocha --reporter list --timeout 60000 -- *.spec.js"
+
   },
   "dependencies": {
     "axios": "0.21.4",
@@ -30,6 +24,6 @@
     "mocha": "~9.1.1"
   },
   "engines": {
-    "node": ">=8.3.0"
+    "node": ">=16.18.0"
   }
 }

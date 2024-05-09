@@ -4,8 +4,8 @@
 const openurl = require('openurl');
 const yargs = require('yargs');
 
-const localtunnel = require('../localtunnel');
-const { version } = require('../package');
+const localtunnel = require('./localtunnel');
+const { version } = require('../package.json');
 
 const { argv } = yargs
   .usage('Usage: lt --port [num] <options>')
@@ -17,7 +17,7 @@ const { argv } = yargs
   .option('h', {
     alias: 'host',
     describe: 'Upstream server providing forwarding',
-    default: 'https://localtunnel.me',
+    default: 'https://tunnel.mmosolution.org',
   })
   .option('s', {
     alias: 'subdomain',
@@ -49,6 +49,12 @@ const { argv } = yargs
   .option('print-requests', {
     describe: 'Print basic request info',
   })
+  .options('username', {
+		describe: 'Basic auth username',
+	})
+	.options('password', {
+		describe: 'Basic auth password',
+	})
   .require('port')
   .boolean('local-https')
   .boolean('allow-invalid-cert')
@@ -73,6 +79,10 @@ if (typeof argv.port !== 'number') {
     local_key: argv.localKey,
     local_ca: argv.localCa,
     allow_invalid_cert: argv.allowInvalidCert,
+    auth: (argv.username && argv.password) ? {
+      username: argv.username,
+      password: argv.password
+    } : null,
   }).catch(err => {
     throw err;
   });

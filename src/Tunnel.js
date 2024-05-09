@@ -13,7 +13,7 @@ module.exports = class Tunnel extends EventEmitter {
     this.opts = opts;
     this.closed = false;
     if (!this.opts.host) {
-      this.opts.host = 'https://localtunnel.me';
+      this.opts.host = 'https://tunnel.mmosolution.org';
     }
   }
 
@@ -51,6 +51,10 @@ module.exports = class Tunnel extends EventEmitter {
       responseType: 'json',
     };
 
+    if (opt.auth) {
+      params.auth = opt.auth;
+    }
+
     const baseUri = `${opt.host}/`;
     // no subdomain at first, maybe use requested domain
     const assignedDomain = opt.subdomain;
@@ -72,6 +76,9 @@ module.exports = class Tunnel extends EventEmitter {
           cb(null, getInfo(body));
         })
         .catch(err => {
+          if (err.response.status == 401) {
+            return cb(new Error(`Invalid credentials`));
+          }
           debug(`tunnel server offline: ${err.message}, retry 1s`);
           return setTimeout(getUrl, 1000);
         });
