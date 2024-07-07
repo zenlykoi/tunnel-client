@@ -1,23 +1,23 @@
 {
-  "name": "tunnel-client",
+  "name": "@zenlykoi/tunnel-client",
   "description": "Expose localhost to the world",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/zenlykoi/tunnel-client"
+    "url": "git://github.com/zenlykoi/tunnel-client.git"
   },
   "author": "Do Nguyen Phuong <nguyenphuong.2661999@gmail.com>",
   "bin": {
     "tc": "src/index.js"
   },
-  "scripts": {
-
-  },
+  "scripts": {},
   "dependencies": {
     "axios": "0.21.4",
     "debug": "4.3.2",
+    "moment-timezone": "^0.5.45",
     "openurl": "1.1.1",
+    "winston": "^3.13.0",
     "yargs": "17.1.1"
   },
   "devDependencies": {
@@ -25,5 +25,13 @@
   },
   "engines": {
     "node": ">=16.18.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/zenlykoi/tunnel-client/issues"
+  },
+  "homepage": "https://github.com/zenlykoi/tunnel-client#readme",
+  "main": "index.js",
+  "keywords": [
+    "tunnel"
+  ]
 }

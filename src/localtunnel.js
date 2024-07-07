@@ -1,4 +1,4 @@
-const Tunnel = require('./Tunnel');
+const Tunnel = require('./tunnel');
 
 module.exports = function localtunnel(arg1, arg2, arg3) {
   const options = typeof arg1 === 'object' ? arg1 : { ...arg2, port: arg1 };

@@ -3,9 +3,8 @@
 const { parse } = require('url');
 const { EventEmitter } = require('events');
 const axios = require('axios');
-const debug = require('debug')('localtunnel:client');
-
-const TunnelCluster = require('./TunnelCluster');
+const TunnelCluster = require('./tunnel-cluster');
+const logger = require('./logger');
 
 module.exports = class Tunnel extends EventEmitter {
   constructor(opts = {}) {
@@ -22,6 +21,9 @@ module.exports = class Tunnel extends EventEmitter {
     const { id, ip, port, url, cached_url, max_conn_count } = body;
     const { host, port: local_port, local_host } = this.opts;
     const { local_https, local_cert, local_key, local_ca, allow_invalid_cert } = this.opts;
+
+    logger.info(`Openning connection on remote port: ${port}`);
+
     return {
       name: id,
       url,
@@ -66,7 +68,6 @@ module.exports = class Tunnel extends EventEmitter {
         .get(uri, params)
         .then(res => {
           const body = res.data;
-          debug('got tunnel information', res.data);
           if (res.status !== 200) {
             const err = new Error(
               (body && body.message) || 'localtunnel server returned an error, please try again'
@@ -79,7 +80,6 @@ module.exports = class Tunnel extends EventEmitter {
           if (err.response.status == 401) {
             return cb(new Error(`Invalid credentials`));
           }
-          debug(`tunnel server offline: ${err.message}, retry 1s`);
           return setTimeout(getUrl, 1000);
         });
     })();
@@ -99,7 +99,6 @@ module.exports = class Tunnel extends EventEmitter {
 
     // re-emit socket error
     this.tunnelCluster.on('error', err => {
-      debug('got socket error', err.message);
       this.emit('error', err);
     });
 
@@ -108,7 +107,6 @@ module.exports = class Tunnel extends EventEmitter {
     // track open count
     this.tunnelCluster.on('open', tunnel => {
       tunnelCount++;
-      debug('tunnel open [total: %d]', tunnelCount);
 
       const closeHandler = () => {
         tunnel.destroy();
@@ -127,7 +125,6 @@ module.exports = class Tunnel extends EventEmitter {
     // when a tunnel dies, open a new one
     this.tunnelCluster.on('dead', () => {
       tunnelCount--;
-      debug('tunnel dead [total: %d]', tunnelCount);
       if (this.closed) {
         return;
       }

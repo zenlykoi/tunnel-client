@@ -2,16 +2,20 @@
 
 Rebuild from [Localtunnel](https://github.com/localtunnel/localtunnel)
 
+# Install
+
+```
+npm i -g @zenlykoi/tunnel-client
+```
+
 # Features
 
 1. Add basic auth
 
-    Add basic auth with `--username` and `--password` arguments
+    Add basic auth with `--user` and `--pass` arguments
 
 # Start
 
-Start tunnel using pm2
-
 ```
-pm2 start src/index.js -- --port 8080 --subdomain domain --username yourusername --password yourpassword
+tc --port 8080 --domain domain --user yourusername --pass yourpassword
 ```

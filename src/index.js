@@ -6,9 +6,10 @@ const yargs = require('yargs');
 
 const localtunnel = require('./localtunnel');
 const { version } = require('../package.json');
+const logger = require('./logger');
 
 const { argv } = yargs
-  .usage('Usage: lt --port [num] <options>')
+  .usage('Usage: tc --port [num] <options>')
   .env(true)
   .option('p', {
     alias: 'port',
@@ -19,8 +20,8 @@ const { argv } = yargs
     describe: 'Upstream server providing forwarding',
     default: 'https://tunnel.mmosolution.org',
   })
-  .option('s', {
-    alias: 'subdomain',
+  .option('domain', {
+    alias: 'domain',
     describe: 'Request this subdomain',
   })
   .option('l', {
@@ -49,10 +50,12 @@ const { argv } = yargs
   .option('print-requests', {
     describe: 'Print basic request info',
   })
-  .options('username', {
+  .options('user', {
+    alias: 'username',
 		describe: 'Basic auth username',
 	})
-	.options('password', {
+	.options('pass', {
+    alias: 'password',
 		describe: 'Basic auth password',
 	})
   .require('port')
@@ -72,7 +75,7 @@ if (typeof argv.port !== 'number') {
   const tunnel = await localtunnel({
     port: argv.port,
     host: argv.host,
-    subdomain: argv.subdomain,
+    subdomain: argv.domain,
     local_host: argv.localHost,
     local_https: argv.localHttps,
     local_cert: argv.localCert,
@@ -84,14 +87,16 @@ if (typeof argv.port !== 'number') {
       password: argv.password
     } : null,
   }).catch(err => {
-    throw err;
+    logger.error(err?.message || 'Unknown error');
+    process.exit(1);
   });
 
   tunnel.on('error', err => {
-    throw err;
+    logger.error(err?.message || 'Unknown error');
+    process.exit(1);
   });
 
-  console.log('your url is: %s', tunnel.url);
+  logger.info(`Your url is: ${tunnel.url}`);
 
   /**
    * `cachedUrl` is set when using a proxy server that support resource caching.
@@ -99,7 +104,7 @@ if (typeof argv.port !== 'number') {
    * @see https://github.com/localtunnel/localtunnel/pull/319#discussion_r319846289
    */
   if (tunnel.cachedUrl) {
-    console.log('your cachedUrl is: %s', tunnel.cachedUrl);
+    logger.info(`Your cached url is: ${tunnel.cachedUrl}`);
   }
 
   if (argv.open) {
@@ -108,7 +113,7 @@ if (typeof argv.port !== 'number') {
 
   if (argv['print-requests']) {
     tunnel.on('request', info => {
-      console.log(new Date().toString(), info.method, info.path);
+      logger.info(`[request] (${info.method}) ${info.path}`)
     });
   }
 })();
