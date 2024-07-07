@@ -89,6 +89,11 @@ module.exports = class TunnelCluster extends EventEmitter {
 
         remote.removeListener('close', remoteClose);
 
+        if (err.code == 'ECONNREFUSED' || err.code == 'ECONNRESET') {
+          this.emit('error', new Error(`Local connection error: ${err.message}`));
+          return remote.end();
+        }
+
         if (err.code !== 'ECONNREFUSED'
             && err.code !== 'ECONNRESET') {
           return remote.end();

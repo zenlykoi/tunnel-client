@@ -2,6 +2,7 @@
 
 const { parse } = require('url');
 const { EventEmitter } = require('events');
+const net = require('net');
 const axios = require('axios');
 const TunnelCluster = require('./tunnel-cluster');
 const logger = require('./logger');
@@ -13,6 +14,29 @@ module.exports = class Tunnel extends EventEmitter {
     this.closed = false;
     if (!this.opts.host) {
       this.opts.host = 'https://tunnel.mmosolution.org';
+    }
+  }
+
+  async validateLocalConnection() {
+    const { port } = this.opts;
+
+    const connect = new Promise((resolve, reject) => {
+      const connection = net.connect({
+        host: 'localhost',
+        port: port
+      });
+
+      connection.on('connect', resolve);
+      connection.once('close', () => reject);
+      connection.on('end', reject);
+      connection.on('error', reject);
+    });
+
+    try {
+      await connect;
+    }
+    catch(error) {
+      throw new Error(`Validate local connection failed: ${error?.message}`);
     }
   }
 
